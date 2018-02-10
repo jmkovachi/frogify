@@ -8,6 +8,7 @@ import json
 import spotipy
 import spotipy.util as util
 import os
+from . import SpotifyWrapper as spw
 
 
 def get_id_and_secret():
@@ -112,6 +113,7 @@ def queue(request):
     # Auth Step 6: Use the access token to access Spotify API
     authorization_header = {"Authorization": "Bearer {}".format(access_token)}
 
+
     # Get profile data
     # print('{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id))
 
@@ -122,11 +124,29 @@ def queue(request):
 
     # print(profile_data)
 
-    # requests.put('https://api.spotify.com/v1/me/player/play', headers=authorization_header)
 
-    print(playlist_items)
+    playlist_endpoint = '{}/tracks'.format(playlist_items[0]['href'])
 
-    return render(request, 'public/createRoom.html', {'playlists': playlist_items})
+    playlist_response = requests.get(playlist_endpoint, headers=authorization_header)
+
+    playlist_json = json.loads(playlist_response.text)['items']
+
+    print(playlist_json[0])
+
+    authorization_header = {"Authorization":"Bearer {}".format(access_token),
+                            'Content-Type': 'application/json',
+                            'Accept' : 'application/json'
+                            }
+
+    print(playlist_json[0]['track']['uri'])
+    requests.put('https://api.spotify.com/v1/me/player/play', data=json.dumps({'uris' : [playlist_json[0]['track']['uri']]}), headers=authorization_header)
+
+    #print(playlist_items)
+
+    return HttpResponse('Response received')
+
+    #return render(request, 'public/createRoom.html', {'playlists' : playlist_items})
+
 
 
 def createRoom(request):
