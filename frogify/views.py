@@ -57,14 +57,8 @@ def index(request):
     """
     Index route
     """
-    return HttpResponse("Hello, world. You're at the polls index.")
-
-"""
-Login route. Redirects to a spotify authentication url.
-"""
-def login(request):
-
-    url = "&".join(["{}={}".format(key, val) for key, val in auth_query_parameters.items()])
+    # return HttpResponse("Hello, world. You're at the polls index.")
+    return render(request, 'frogify/index.html')
 
 
 def login(request):
@@ -99,41 +93,40 @@ def queue(request):
 
     response_data = json.loads(post_request.text)
 
-
     access_token = response_data["access_token"]
     refresh_token = response_data["refresh_token"]
     token_type = response_data["token_type"]
     expires_in = response_data["expires_in"]
     sp = spotipy.Spotify(auth=access_token)
     playlists = sp.user_playlists('jmkovachi')
-    #playlist_id = playlists['items'][10]['id']
+    # playlist_id = playlists['items'][10]['id']
     playlist_items = []
     for item in playlists['items']:
         playlist_items.append({
-            'href' : item['href'],
-            'name' : item['name'],
-            })
-    #print(playlists['items'][10])
-    #print(sp.user_playlist('jmkovachi', playlist_id=playlists['items'][0]['id'], fields='tracks,next'))
+            'href': item['href'],
+            'name': item['name'],
+        })
+    # print(playlists['items'][10])
+    # print(sp.user_playlist('jmkovachi', playlist_id=playlists['items'][0]['id'], fields='tracks,next'))
 
     # Auth Step 6: Use the access token to access Spotify API
-    authorization_header = {"Authorization":"Bearer {}".format(access_token)}
+    authorization_header = {"Authorization": "Bearer {}".format(access_token)}
 
     # Get profile data
-    #print('{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id))
+    # print('{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id))
 
-    #user_profile_api_endpoint = '{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id)
+    # user_profile_api_endpoint = '{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id)
     """user_profile_api_endpoint = playlist_hrefs[0]
     profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header)
     profile_data = json.loads(profile_response.text)"""
 
-    #print(profile_data)
+    # print(profile_data)
 
-    #requests.put('https://api.spotify.com/v1/me/player/play', headers=authorization_header)
+    # requests.put('https://api.spotify.com/v1/me/player/play', headers=authorization_header)
 
     print(playlist_items)
 
-    return render(request, 'public/createRoom.html', {'playlists' : playlist_items})
+    return render(request, 'public/createRoom.html', {'playlists': playlist_items})
 
 
 def createRoom(request):
@@ -146,4 +139,3 @@ def createRoom(request):
     playlist_endpoint = '{}/tracks'.format(SPOTIFY_API_URL)
 
     playlist_response = requests.get(playlist_endpoint, headers=authorization_header)
-
