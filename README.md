@@ -1,0 +1,1 @@
+An upvoting jukebox platform for parties and other events and stuff.
