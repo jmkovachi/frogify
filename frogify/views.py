@@ -129,7 +129,21 @@ def queue(request):
 
     #print(profile_data)
 
+    #requests.put('https://api.spotify.com/v1/me/player/play', headers=authorization_header)
+
     print(playlist_items)
 
     return render(request, 'public/createRoom.html', {'playlists' : playlist_items})
+
+
+def createRoom(request):
+    """
+    Creates room using playlist id.
+    """
+
+    playlist = request.POST['playlist']
+
+    playlist_endpoint = '{}/tracks'.format(SPOTIFY_API_URL)
+
+    playlist_response = requests.get(playlist_endpoint, headers=authorization_header)
 
