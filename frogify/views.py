@@ -1,9 +1,12 @@
+from django.http import HttpResponse
+import urllib
+from django.shortcuts import redirect
+from django.shortcuts import render
+import requests
 import base64
 import json
-
-import requests
-from django.http import HttpResponse
-from django.shortcuts import redirect
+import spotipy
+import spotipy.util as util
 import os
 
 
@@ -56,6 +59,13 @@ def index(request):
     """
     return HttpResponse("Hello, world. You're at the polls index.")
 
+"""
+Login route. Redirects to a spotify authentication url.
+"""
+def login(request):
+
+    url = "&".join(["{}={}".format(key, val) for key, val in auth_query_parameters.items()])
+
 
 def login(request):
     """
@@ -89,21 +99,37 @@ def queue(request):
 
     response_data = json.loads(post_request.text)
 
-    print(response_data)
 
     access_token = response_data["access_token"]
     refresh_token = response_data["refresh_token"]
     token_type = response_data["token_type"]
     expires_in = response_data["expires_in"]
+    sp = spotipy.Spotify(auth=access_token)
+    playlists = sp.user_playlists('jmkovachi')
+    #playlist_id = playlists['items'][10]['id']
+    playlist_items = []
+    for item in playlists['items']:
+        playlist_items.append({
+            'href' : item['href'],
+            'name' : item['name'],
+            })
+    #print(playlists['items'][10])
+    #print(sp.user_playlist('jmkovachi', playlist_id=playlists['items'][0]['id'], fields='tracks,next'))
 
     # Auth Step 6: Use the access token to access Spotify API
-    authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+    authorization_header = {"Authorization":"Bearer {}".format(access_token)}
 
     # Get profile data
-    user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
+    #print('{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id))
+
+    #user_profile_api_endpoint = '{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id)
+    """user_profile_api_endpoint = playlist_hrefs[0]
     profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header)
-    profile_data = json.loads(profile_response.text)
+    profile_data = json.loads(profile_response.text)"""
 
-    print(profile_data)
+    #print(profile_data)
 
-    return HttpResponse('You made it!')
+    print(playlist_items)
+
+    return render(request, 'public/createRoom.html', {'playlists' : playlist_items})
+
