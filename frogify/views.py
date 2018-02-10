@@ -5,8 +5,10 @@ import requests
 import base64
 import json
 
-
 def get_id_and_secret():
+	"""
+	Reads client id and secret from a file on the local file system.
+	"""
 	try:
 		with open('secret', 'r') as file:
 			text = file.read()
@@ -20,10 +22,21 @@ def get_id_and_secret():
 
 CLIENT_ID, CLIENT_SECRET = get_id_and_secret()
 
+# Redirect URI and scopes used for our application
 REDIRECT_URI = 'http://localhost:8000/frogify/queue'
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
-SCOPE = "playlist-modify-public playlist-modify-private"
+SCOPE = """playlist-modify-public playlist-modify-private
+		   user-read-currently-playing user-modify-playback-state
+		   user-read-private playlist-read-private playlist-modify-public
+		   playlist-modify-private ugc-image-upload user-top-read
+		   user-read-recently-played"""
 
+# Base url and version number
+SPOTIFY_API_BASE_URL = "https://api.spotify.com"
+API_VERSION = "v1"
+SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
+
+# Auth query parameters for getting auth token
 auth_query_parameters = {
     "response_type": "code",
     "redirect_uri": REDIRECT_URI,
@@ -33,10 +46,15 @@ auth_query_parameters = {
     "client_id": CLIENT_ID
 }
 
+"""
+Index route
+"""
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
-
+"""
+Login route. Redirects to a spotify authentication url.
+"""
 def login(request):
 	url = "&".join(["{}={}".format(key, val) for key, val in auth_query_parameters.items()])
 
@@ -44,7 +62,12 @@ def login(request):
 	return redirect(auth_url)
 
 
+
+"""
+Redirect uri used upon login. Source: https://github.com/drshrey/spotify-flask-auth-example/blob/master/main.py
+"""
 def queue(request):
+	print(repr(SCOPE))
 	auth_code = request.GET['code']
 
 	code_payload = {
@@ -63,5 +86,20 @@ def queue(request):
 	response_data = json.loads(post_request.text)
 
 	print(response_data)
+
+	access_token = response_data["access_token"]
+	refresh_token = response_data["refresh_token"]
+	token_type = response_data["token_type"]
+	expires_in = response_data["expires_in"]
+
+	# Auth Step 6: Use the access token to access Spotify API
+	authorization_header = {"Authorization":"Bearer {}".format(access_token)}
+
+	# Get profile data
+	user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
+	profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header)
+	profile_data = json.loads(profile_response.text)
+
+	print(profile_data)
 
 	return HttpResponse('You made it!')
