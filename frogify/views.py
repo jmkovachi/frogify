@@ -51,12 +51,24 @@ auth_query_parameters = {
 }
 
 
+class dummysong:
+    def __init__(self):
+        self.title = 'Homemade Dynamite'
+        self.album = 'Melodrama'
+        self.artist = 'Lorde'
+        self.votes = '48'
+
+
 def index(request):
     """
     Index route
     """
     # return HttpResponse("Hello, world. You're at the polls index.")
-    return render(request, 'index.html')
+    context = {
+        'up_next': [dummysong() for i in range(5)],
+        'now_playing': dummysong()
+    }
+    return render(request, 'index.html', context)
 
 
 def login(request):
@@ -88,7 +100,6 @@ def queue(request):
     print(request.session.keys())
     access_token = request.session['access_token']
 
-
     """access_token = response_data["access_token"]
     refresh_token = response_data["refresh_token"]
     token_type = response_data["token_type"]
@@ -109,10 +120,10 @@ def queue(request):
             'name': item['name'],
         })
 
-    #return render(request, 'frogify/event.html',)
-    return render(request, 'event.html', {'playlists' : playlist_items})
+    # return render(request, 'frogify/event.html',)
+    return render(request, 'event.html', {'playlists': playlist_items})
 
-    #return HttpResponse('Response received')
+    # return HttpResponse('Response received')
 
 
 def createRoom(request):

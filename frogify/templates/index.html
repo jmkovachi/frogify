@@ -2,17 +2,26 @@
 
 {% block content %}
     <!--  Song Info -->
-    <div id="songinfo">
-        <h1>Song: {{ now_playing.title }}</h1>
-        <p>Artist: {{ now_playing.artist }} | Album: {{ now_playing.album }}</p>
+    <div id="currentsong">
+        <h1>{{ now_playing.title }}</h1>
+        <p>{{ now_playing.artist }} | {{ now_playing.album }}</p>
     </div>
 
     <div id="upnext">
         <h1>UP NEXT</h1>
         {% for song in up_next %}
             <div class="song">
-                <h1>Song: {{ song.title }}</h1>
-                <p>Artist: {{ song.artist }} | Album: {{ song.album }}</p>
+                <div class="info">
+                    <h1>{{ song.title }}</h1>
+                    <p>{{ song.artist }} | {{ song.album }}</p>
+                </div>
+                <div class="netvotes">
+                    <h1>{{ song.votes }}</h1>
+                </div>
+                <div class="voting">
+                    <a href="#" class="up">&#9650</a>
+                    <a href="#" class="down">&#9660</a>
+                </div>
             </div>
         {% endfor %}
     </div>
