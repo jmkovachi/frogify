@@ -74,7 +74,9 @@ def redirect_login(request):
 
     auth_code = request.session['auth_code']
 
-    request.session['access_token'] = spw.SpotifyWrapper.get_access_token(auth_code)
+    wrapper = spw.SpotifyWrapper()
+
+    request.session['access_token'] = wrapper.get_access_token(auth_code)
 
     return redirect('/frogify/queue')
 
@@ -86,6 +88,7 @@ def queue(request):
     print(request.session.keys())
     access_token = request.session['access_token']
 
+
     """access_token = response_data["access_token"]
     refresh_token = response_data["refresh_token"]
     token_type = response_data["token_type"]
@@ -93,9 +96,11 @@ def queue(request):
 
     authorization_header = {"Authorization": "Bearer {}".format(access_token)}
 
+    wrapper = spw.SpotifyWrapper()
+
     # sp = spotipy.Spotify(auth=access_token)
     # playlists = sp.user_playlists('jmkovachi')
-    playlists = spw.SpotifyWrapper.get_user_playlists(username='jmkovachi', auth_header=authorization_header)
+    playlists = wrapper.get_user_playlists(username='jmkovachi', headers=authorization_header)
     # playlist_id = playlists['items'][10]['id']
     playlist_items = []
     for item in playlists:
@@ -104,13 +109,10 @@ def queue(request):
             'name': item['name'],
         })
 
-    """playlist_endpoint = '{}/tracks'.format(playlist_items[0]['href'])
+    #return render(request, 'frogify/event.html',)
+    return render(request, 'frogify/event.html', {'playlists' : playlist_items})
 
-    playlist_response = requests.get(playlist_endpoint, headers=authorization_header)
-
-    playlist_json = json.loads(playlist_response.text)['items']"""
-
-    return HttpResponse('Response received')
+    #return HttpResponse('Response received')
 
 
 

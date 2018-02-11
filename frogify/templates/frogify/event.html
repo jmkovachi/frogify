@@ -2,10 +2,11 @@
 <html>
 
 <head>
+  {% load static %}
   <title>Frogify</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="event.css" type="text/css" rel="stylesheet">
+  <link href="{% static "frogify/event.css" %}" type="text/css" rel="stylesheet">
 </head>
 
 <body>
@@ -16,6 +17,15 @@
     <!-- <li style="padding-left: 25px;"><a href="index.html">Home</a></li> -->
   </ul>
 
+
+  {% if playlists %}
+    {% for playlist in playlists %}
+      <div> {{ playlist.name }} </div>
+    {% endfor %}
+  {% else %}
+    <div> </div>
+
+  {% endif %}
   <!--  Song Info -->
   <div id="add">
     

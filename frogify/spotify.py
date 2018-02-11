@@ -36,8 +36,8 @@ CLIENT_ID, CLIENT_SECRET = get_id_and_secret()
 class SpotifyWrapper:
 
     def __init__(self, client_id=None, client_secret=None):
-        self.client_id = client_id
-        self.client_secret = client_secret
+        self.client_id = CLIENT_ID
+        self.client_secret = CLIENT_SECRET
         self.auth_header = 'TODO'  # TODO
 
     def get_access_token(self, auth_code):
@@ -56,7 +56,7 @@ class SpotifyWrapper:
 
         response_data = json.loads(post_request.text)
 
-        print(response_data)
+        #print(response_data)
 
         access_token = response_data["access_token"]
         refresh_token = response_data["refresh_token"]
@@ -73,7 +73,7 @@ class SpotifyWrapper:
         playlist_endpoint = '{}/tracks'.format(href)
         return json.loads(requests.get(playlist_endpoint, headers=self.auth_header).text)['items']
 
-    def get_user_playlists(self, username=None):
+    def get_user_playlists(self, username=None, headers=None):
         playlists = requests.get('https://api.spotify.com/v1/users/{}/playlists'.format(username),
-                                 headers=self.auth_header)
+                                 headers=headers)
         return playlists.json()['items']
