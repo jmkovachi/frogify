@@ -161,3 +161,4 @@ flycheck_*.el
 # Pycharm
 .idea/
 
+.DS_Store
