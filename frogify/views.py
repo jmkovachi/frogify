@@ -1,16 +1,16 @@
-from django.http import HttpResponse
-import urllib
-from django.shortcuts import redirect
-from django.shortcuts import render
-import requests
 import base64
 import json
+
+import requests
 import spotipy
-import spotipy.util as util
-import os
-from . import SpotifyWrapper as spw
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.shortcuts import render
 
 
+# TODO: Function only ever used once ever. Consider making it not a function.
+# TODO: DRY - Don't Repeat Yourself.
+# TODO: Consider moving reading Client-ID and Client Secret to `settings.py`
 def get_id_and_secret():
     """
     Reads client id and secret from a file on the local file system.
@@ -18,11 +18,8 @@ def get_id_and_secret():
     try:
         with open('secret', 'r') as file:
             text = file.read()
-            client_id = text.split('\n')[0]
-            client_secret = text.split('\n')[1]
-            print(client_id)
-            return client_id, client_secret
-    except Exception as e:
+        return text.split('\n')
+    except:
         print('cannot find file with id and secret')
         return '', ''
 
@@ -113,7 +110,6 @@ def queue(request):
     # Auth Step 6: Use the access token to access Spotify API
     authorization_header = {"Authorization": "Bearer {}".format(access_token)}
 
-
     # Get profile data
     # print('{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id))
 
@@ -124,7 +120,6 @@ def queue(request):
 
     # print(profile_data)
 
-
     playlist_endpoint = '{}/tracks'.format(playlist_items[0]['href'])
 
     playlist_response = requests.get(playlist_endpoint, headers=authorization_header)
@@ -133,20 +128,20 @@ def queue(request):
 
     print(playlist_json[0])
 
-    authorization_header = {"Authorization":"Bearer {}".format(access_token),
+    authorization_header = {"Authorization": "Bearer {}".format(access_token),
                             'Content-Type': 'application/json',
-                            'Accept' : 'application/json'
+                            'Accept': 'application/json'
                             }
 
     print(playlist_json[0]['track']['uri'])
-    requests.put('https://api.spotify.com/v1/me/player/play', data=json.dumps({'uris' : [playlist_json[0]['track']['uri']]}), headers=authorization_header)
+    requests.put('https://api.spotify.com/v1/me/player/play',
+                 data=json.dumps({'uris': [playlist_json[0]['track']['uri']]}), headers=authorization_header)
 
-    #print(playlist_items)
+    # print(playlist_items)
 
     return HttpResponse('Response received')
 
-    #return render(request, 'public/createRoom.html', {'playlists' : playlist_items})
-
+    # return render(request, 'public/createRoom.html', {'playlists' : playlist_items})
 
 
 def createRoom(request):
