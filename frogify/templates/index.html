@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!--  Song Info -->
+    <div id="songinfo">
+        <h1>Song: {{ now_playing.title }}</h1>
+        <p>Artist: {{ now_playing.artist }} | Album: {{ now_playing.album }}</p>
+    </div>
+
+    <div id="upnext">
+        <h1>UP NEXT</h1>
+        {% for song in up_next %}
+            <div class="song">
+                <h1>Song: {{ song.title }}</h1>
+                <p>Artist: {{ song.artist }} | Album: {{ song.album }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

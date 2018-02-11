@@ -56,7 +56,7 @@ def index(request):
     Index route
     """
     # return HttpResponse("Hello, world. You're at the polls index.")
-    return render(request, 'frogify/index.html')
+    return render(request, 'index.html')
 
 
 def login(request):
@@ -110,10 +110,9 @@ def queue(request):
         })
 
     #return render(request, 'frogify/event.html',)
-    return render(request, 'frogify/event.html', {'playlists' : playlist_items})
+    return render(request, 'event.html', {'playlists' : playlist_items})
 
     #return HttpResponse('Response received')
-
 
 
 def createRoom(request):
@@ -125,5 +124,3 @@ def createRoom(request):
     playlist_endpoint = '{}/tracks'.format(SPOTIFY_API_URL)
 
     playlist_response = requests.get(playlist_endpoint, headers=authorization_header)
-
-    
