@@ -1,0 +1,90 @@
+body,h1,h2,h3,h4,h5,h6 {font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;}
+
+body, html {
+  background-color: #101010;
+  color: #fff;
+  height: 100%;
+  width: 100%;
+  line-height: 1.8;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+#nav {
+  background-color: #828282;
+  border-bottom: 1px solid #2f2f2f;
+  height: 50px;
+  width: 100%;
+  list-style-type: none;
+  margin-top: 0;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+#logo {
+  height: 35px;
+}
+
+#footerwrap {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+}
+
+#footer {
+  background-color: #828282;
+  height: 80px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-end;
+}
+
+#footer img {
+  height: 50px;
+  width: 300px;
+}
+
+#songinfo {
+  padding-left: 50px;
+  margin-bottom: 50px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#songinfo h1, p {
+  margin: 0;
+}
+
+#upnext {
+  padding-left: 50px;
+  margin-top: 50px;
+  width: 50%;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.song {
+  padding-left: 50px;
+  margin-bottom: 2px;
+  width: 100%;
+  height: 100px;
+  background-color: white;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.song h1, p {
+  margin: 0;
+}
