@@ -104,36 +104,24 @@ def queue(request):
             'name': item['name'],
         })
 
-    playlist_endpoint = '{}/tracks'.format(playlist_items[0]['href'])
+    """playlist_endpoint = '{}/tracks'.format(playlist_items[0]['href'])
 
     playlist_response = requests.get(playlist_endpoint, headers=authorization_header)
 
-    playlist_json = json.loads(playlist_response.text)['items']
-
-    # print(playlist_json[0])
-
-    authorization_header = {"Authorization": "Bearer {}".format(access_token),
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                            }
-
-    # print(playlist_json[0]['track']['uri'])
-    # requests.put('https://api.spotify.com/v1/me/player/play', data=json.dumps({'uris' : [playlist_json[0]['track']['uri']]}), headers=authorization_header)
-
-    # print(playlist_items)
+    playlist_json = json.loads(playlist_response.text)['items']"""
 
     return HttpResponse('Response received')
 
-    # return render(request, 'public/createRoom.html', {'playlists' : playlist_items})
 
 
 def createRoom(request):
     """
     Creates room using playlist id.
     """
-
     playlist = request.POST['playlist']
 
     playlist_endpoint = '{}/tracks'.format(SPOTIFY_API_URL)
 
     playlist_response = requests.get(playlist_endpoint, headers=authorization_header)
+
+    
