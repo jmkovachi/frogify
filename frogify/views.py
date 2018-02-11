@@ -1,11 +1,11 @@
-import base64
 import json
 
 import requests
-import spotipy
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
+
+from . import spotify as spw
 
 
 # TODO: Function only ever used once ever. Consider making it not a function.
@@ -27,7 +27,7 @@ def get_id_and_secret():
 CLIENT_ID, CLIENT_SECRET = get_id_and_secret()
 
 # Redirect URI and scopes used for our application
-REDIRECT_URI = 'http://localhost:8000/frogify/queue'
+REDIRECT_URI = 'http://localhost:8000/frogify/redirect_login'
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 SCOPE = ('playlist-modify-public playlist-modify-private '
          'user-read-currently-playing user-modify-playback-state '
@@ -69,56 +69,40 @@ def login(request):
     return redirect(auth_url)
 
 
+def redirect_login(request):
+    request.session['auth_code'] = request.GET['code']
+
+    auth_code = request.session['auth_code']
+
+    request.session['access_token'] = spw.SpotifyWrapper.get_access_token(auth_code)
+
+    return redirect('/frogify/queue')
+
+
 def queue(request):
     """
     Redirect uri used upon login. Source: https://github.com/drshrey/spotify-flask-auth-example/blob/master/main.py
     """
-    print(repr(SCOPE))
-    auth_code = request.GET['code']
+    print(request.session.keys())
+    access_token = request.session['access_token']
 
-    code_payload = {
-        "grant_type": "authorization_code",
-        "code": str(auth_code),
-        "redirect_uri": REDIRECT_URI
-    }
-
-    data_str = "{}:{}".format(CLIENT_ID, CLIENT_SECRET)
-
-    b64_auth_str = base64.urlsafe_b64encode(data_str.encode()).decode()
-
-    headers = {"Authorization": "Basic {}".format(b64_auth_str)}
-    post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
-
-    response_data = json.loads(post_request.text)
-
-    access_token = response_data["access_token"]
+    """access_token = response_data["access_token"]
     refresh_token = response_data["refresh_token"]
     token_type = response_data["token_type"]
-    expires_in = response_data["expires_in"]
-    sp = spotipy.Spotify(auth=access_token)
-    playlists = sp.user_playlists('jmkovachi')
+    expires_in = response_data["expires_in"]"""
+
+    authorization_header = {"Authorization": "Bearer {}".format(access_token)}
+
+    # sp = spotipy.Spotify(auth=access_token)
+    # playlists = sp.user_playlists('jmkovachi')
+    playlists = spw.SpotifyWrapper.get_user_playlists(username='jmkovachi', auth_header=authorization_header)
     # playlist_id = playlists['items'][10]['id']
     playlist_items = []
-    for item in playlists['items']:
+    for item in playlists:
         playlist_items.append({
             'href': item['href'],
             'name': item['name'],
         })
-    # print(playlists['items'][10])
-    # print(sp.user_playlist('jmkovachi', playlist_id=playlists['items'][0]['id'], fields='tracks,next'))
-
-    # Auth Step 6: Use the access token to access Spotify API
-    authorization_header = {"Authorization": "Bearer {}".format(access_token)}
-
-    # Get profile data
-    # print('{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id))
-
-    # user_profile_api_endpoint = '{}/users/{}/playlists/{}/tracks'.format(SPOTIFY_API_URL, 'jmkovachi', playlist_id)
-    """user_profile_api_endpoint = playlist_hrefs[0]
-    profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header)
-    profile_data = json.loads(profile_response.text)"""
-
-    # print(profile_data)
 
     playlist_endpoint = '{}/tracks'.format(playlist_items[0]['href'])
 
@@ -126,16 +110,15 @@ def queue(request):
 
     playlist_json = json.loads(playlist_response.text)['items']
 
-    print(playlist_json[0])
+    # print(playlist_json[0])
 
     authorization_header = {"Authorization": "Bearer {}".format(access_token),
                             'Content-Type': 'application/json',
                             'Accept': 'application/json'
                             }
 
-    print(playlist_json[0]['track']['uri'])
-    requests.put('https://api.spotify.com/v1/me/player/play',
-                 data=json.dumps({'uris': [playlist_json[0]['track']['uri']]}), headers=authorization_header)
+    # print(playlist_json[0]['track']['uri'])
+    # requests.put('https://api.spotify.com/v1/me/player/play', data=json.dumps({'uris' : [playlist_json[0]['track']['uri']]}), headers=authorization_header)
 
     # print(playlist_items)
 
