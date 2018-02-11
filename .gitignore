@@ -161,6 +161,3 @@ flycheck_*.el
 # Pycharm
 .idea/
 
-# The database
-
-*.sqlite3
